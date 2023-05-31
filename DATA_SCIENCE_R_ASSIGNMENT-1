@@ -1,0 +1,59 @@
+#"C" SOLUTION
+tennis <- function(p, A ,B, count) {
+  if (A >= 3 || B >= 3) {
+    return(count)
+  } else {
+    t <- rbinom(n = 1, size = 1, prob = p)
+    A <- A + t
+    B <- B + 1 - t
+    count <- count + 1
+    return(tennis(p, A, B, count))
+  }
+}
+matches<-numeric(length = 1000)
+for(i in 1:1000){
+  matches[i]<-tennis(0.70,0,0,0)
+}
+mean(matches)
+
+
+#"D"SOLUTION
+MontyHall <- function() {
+  d <- c("car", "goat", "goat")
+  shuffled_d <- sample(d)
+  chosen_d <- sample(1:3, 1)
+  monty_open_index <- ifelse(shuffled_d[chosen_d] == "goat",
+                             which(shuffled_d == "goat" & 1:3 != chosen_d),
+                             which(shuffled_d == "goat"))
+  remaining_d <- setdiff(1:3, c(chosen_d, monty_open_index))
+  if (shuffled_d[remaining_d] == "car") {
+    return(1)
+  } else {
+    return(0)
+  }
+}
+
+wins <- replicate(1000, MontyHall())
+prob_win_switch <- mean(wins)
+
+print(prob_win_switch)
+
+
+#"E"SOLUTION
+library(rvest)
+page <- read_html('https://editorial.rottentomatoes.com/guide/best-netflix-movies-to-watch-right-now/')
+
+movies <- page %>%
+  html_nodes(".countdown-item")
+
+for (movie in movies) {
+  ranking <- movie %>% html_node(".countdown-index") %>% html_text() %>% trimws()
+  name <- movie %>% html_node(".article_movie_title") %>% html_text() %>% trimws()
+  score <- movie %>% html_node(".tMeterScore") %>% html_text() %>% trimws()
+  year <- movie %>% html_node(".start-year") %>% html_text() %>% trimws()
+  
+  cat("Ranking:", ranking, "\n")
+  cat("Movie:", name, "\n")
+  cat("Tomato % score:", score, "\n")
+  cat("Year of movie:", year, "\n\n")
+}
